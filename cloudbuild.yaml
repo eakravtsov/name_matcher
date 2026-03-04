@@ -63,6 +63,9 @@ steps:
           sed -i 's|build: \.|image: gcr.io/'"$PROJECT_ID"'/name_matcher_api:'"$COMMIT_SHA"'|' docker-compose.yml
         fi
         
+        # Authenticate Docker to GCR on the VM
+        sudo gcloud auth configure-docker --quiet
+        
         sudo docker-compose pull
         sudo docker-compose up -d
 
