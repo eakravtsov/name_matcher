@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy the requirements file and install dependencies
 COPY requirements-prod.txt .
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements-prod.txt --index-url https://download.pytorch.org/whl/cpu
+    pip install --no-cache-dir -r requirements-prod.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Copy the application code
 COPY . .
