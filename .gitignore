@@ -14,15 +14,10 @@ venv/
 ENV/
 
 # PyTorch / Machine Learning Models
-*.pt
-*.pth
-*.pkl
+# Tracks the .pt and .pkl assets for the unitary container build
 
 # Datasets & Databases
-*.csv
-*.db
-*.sqlite3
-names_kb.db
+# Tracks names_kb.db for the unitary container build
 jrc_names_parsed.csv
 train.csv
 val.csv

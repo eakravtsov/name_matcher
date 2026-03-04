@@ -10,8 +10,8 @@ services:
     environment:
       - ROOT_PATH=/name_matcher
     volumes:
-      # Map the SQLite DB persistence layer
-      - ./names_kb.db:/app/names_kb.db
+      # Use caddy volumes for persistence of web server state
+      - ./Caddyfile:/etc/caddy/Caddyfile
 
   caddy:
     image: caddy:2-alpine
