@@ -125,33 +125,57 @@ function displayResult(data) {
 
     // Reset Color Classes
     const colorClasses = [
-        'text-emerald-400', 'text-amber-400', 'text-yellow-400', 'text-rose-400',
-        'bg-emerald-500', 'bg-amber-500', 'bg-yellow-500', 'bg-rose-500',
-        'shadow-[0_0_15px_rgba(16,185,129,0.8)]', 'shadow-[0_0_15px_rgba(245,158,11,0.8)]', 'shadow-[0_0_15px_rgba(234,179,8,0.8)]', 'shadow-[0_0_15px_rgba(244,63,94,0.8)]',
-        'shadow-[0_0_10px_rgba(16,185,129,0.5)]', 'shadow-[0_0_10px_rgba(245,158,11,0.5)]', 'shadow-[0_0_10px_rgba(234,179,8,0.5)]', 'shadow-[0_0_10px_rgba(244,63,94,0.5)]'
+        'text-emerald-400', 'text-amber-400', 'text-yellow-400', 'text-rose-400', 'text-green-500', 'text-orange-500',
+        'bg-emerald-500', 'bg-amber-500', 'bg-yellow-500', 'bg-rose-500', 'bg-green-600', 'bg-orange-600',
+        'shadow-[0_0_15px_rgba(16,185,129,0.8)]', 'shadow-[0_0_15px_rgba(245,158,11,0.8)]', 'shadow-[0_0_15px_rgba(234,179,8,0.8)]', 'shadow-[0_0_15px_rgba(244,63,94,0.8)]', 'shadow-[0_0_15px_rgba(22,163,74,0.8)]', 'shadow-[0_0_15px_rgba(234,88,12,0.8)]',
+        'shadow-[0_0_10px_rgba(16,185,129,0.5)]', 'shadow-[0_0_10px_rgba(245,158,11,0.5)]', 'shadow-[0_0_10px_rgba(234,179,8,0.5)]', 'shadow-[0_0_10px_rgba(244,63,94,0.5)]', 'shadow-[0_0_10px_rgba(22,163,74,0.5)]', 'shadow-[0_0_10px_rgba(234,88,12,0.5)]'
     ];
     [icon, title, confidenceText, accent, confidenceBar].forEach(el => {
         colorClasses.forEach(cls => el.classList.remove(cls));
     });
 
-    if (percentage >= 80) {
-        title.innerText = "Entity Match Approved";
+    if (percentage === 100) {
+        title.innerText = "Exact Match";
         title.classList.add('text-emerald-400');
         icon.setAttribute('data-lucide', 'check-circle-2');
         icon.classList.add('text-emerald-400');
         accent.classList.add('bg-emerald-500', 'shadow-[0_0_15px_rgba(16,185,129,0.8)]');
         confidenceBar.classList.add('bg-emerald-500', 'shadow-[0_0_10px_rgba(16,185,129,0.5)]');
         confidenceText.classList.add('text-emerald-400');
-    } else if (percentage > 20) {
-        title.innerText = "Entity Match Dubious";
-        title.classList.add('text-yellow-400');
+    } else if (percentage >= 90) {
+        title.innerText = "Strong Match";
+        title.classList.add('text-emerald-400');
+        icon.setAttribute('data-lucide', 'check-circle-2');
+        icon.classList.add('text-emerald-400');
+        accent.classList.add('bg-emerald-500', 'shadow-[0_0_15px_rgba(16,185,129,0.8)]');
+        confidenceBar.classList.add('bg-emerald-500', 'shadow-[0_0_10px_rgba(16,185,129,0.5)]');
+        confidenceText.classList.add('text-emerald-400');
+    } else if (percentage >= 80) {
+        title.innerText = "Probable Match";
+        title.classList.add('text-green-500');
+        icon.setAttribute('data-lucide', 'check-circle-2');
+        icon.classList.add('text-green-500');
+        accent.classList.add('bg-green-600', 'shadow-[0_0_15px_rgba(22,163,74,0.8)]');
+        confidenceBar.classList.add('bg-green-600', 'shadow-[0_0_10px_rgba(22,163,74,0.5)]');
+        confidenceText.classList.add('text-green-500');
+    } else if (percentage >= 50) {
+        title.innerText = "Needs Review";
+        title.classList.add('text-amber-400');
         icon.setAttribute('data-lucide', 'help-circle');
-        icon.classList.add('text-yellow-400');
-        accent.classList.add('bg-yellow-500', 'shadow-[0_0_15px_rgba(234,179,8,0.8)]');
-        confidenceBar.classList.add('bg-yellow-500', 'shadow-[0_0_10px_rgba(234,179,8,0.5)]');
-        confidenceText.classList.add('text-yellow-400');
+        icon.classList.add('text-amber-400');
+        accent.classList.add('bg-amber-500', 'shadow-[0_0_15px_rgba(245,158,11,0.8)]');
+        confidenceBar.classList.add('bg-amber-500', 'shadow-[0_0_10px_rgba(245,158,11,0.5)]');
+        confidenceText.classList.add('text-amber-400');
+    } else if (percentage >= 21) {
+        title.innerText = "Unlikely Match";
+        title.classList.add('text-orange-500');
+        icon.setAttribute('data-lucide', 'help-circle');
+        icon.classList.add('text-orange-500');
+        accent.classList.add('bg-orange-600', 'shadow-[0_0_15px_rgba(234,88,12,0.8)]');
+        confidenceBar.classList.add('bg-orange-600', 'shadow-[0_0_10px_rgba(234,88,12,0.5)]');
+        confidenceText.classList.add('text-orange-500');
     } else {
-        title.innerText = "Entity Match Rejected";
+        title.innerText = "Definite Non-Match";
         title.classList.add('text-rose-400');
         icon.setAttribute('data-lucide', 'x-circle');
         icon.classList.add('text-rose-400');
