@@ -9,9 +9,7 @@ services:
       - "8000:8000"
     environment:
       - ROOT_PATH=/name_matcher
-    volumes:
-      # Use caddy volumes for persistence of web server state
-      - ./Caddyfile:/etc/caddy/Caddyfile
+    # No volumes needed for unitary API container
 
   caddy:
     image: caddy:2-alpine

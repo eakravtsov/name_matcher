@@ -53,6 +53,12 @@ steps:
         
         cd ~/name_matcher
         
+        # CLEANUP: Remove old directory-based volumes if they exist from previous bugs
+        # This ensures they don't interfere with the unitary container
+        if [ -d "names_kb.db" ]; then sudo rm -rf "names_kb.db"; fi
+        if [ -d "best_siamese_model.pt" ]; then sudo rm -rf "best_siamese_model.pt"; fi
+        if [ -d "calibrator.pkl" ]; then sudo rm -rf "calibrator.pkl"; fi
+
         # Prune old system artifacts
         sudo docker system prune -af || true
         
