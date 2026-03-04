@@ -27,7 +27,7 @@ steps:
           sudo chmod +x /usr/local/bin/docker-compose
         fi
 
-  # 4. Copy configuration, Caddyfile, and database files to the VM
+  # 4. Copy configuration and Caddyfile to the VM
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'compute'
@@ -35,7 +35,6 @@ steps:
       - '--zone=us-central1-f'
       - 'docker-compose.yml'
       - 'Caddyfile'
-      - 'names_kb.db'
       - 'name-matcher-vm:~/name_matcher_tmp/'
 
   # 5. Execute Deployment (Swap images and restart Docker, Configure Caddy)
@@ -51,11 +50,6 @@ steps:
         # Always overwrite configs with latest
         mv ~/name_matcher_tmp/docker-compose.yml ~/name_matcher/
         mv ~/name_matcher_tmp/Caddyfile ~/name_matcher/
-        
-        # Only copy over the DB if it doesn't exist to protect user overrides
-        if [ ! -f ~/name_matcher/names_kb.db ]; then
-          mv ~/name_matcher_tmp/names_kb.db ~/name_matcher/
-        fi
         
         cd ~/name_matcher
         
