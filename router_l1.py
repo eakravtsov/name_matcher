@@ -49,6 +49,7 @@ def check_level_1(name1, name2, use_carlton=True, use_wikidata=True, use_jrc=Tru
     cursor.execute("SELECT id, gender FROM CanonicalNames WHERE name_string = ?", (n2,))
     res2 = cursor.fetchone()
     
+    
     if not res1 or not res2:
         conn.close()
         return {
