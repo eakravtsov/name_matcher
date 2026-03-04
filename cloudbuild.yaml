@@ -7,10 +7,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA']
 
-  # 3. Deploy to Google Compute Engine (via docker-compose)
-  # NOTE: This assumes you have an instance named 'name-matcher-vm' running in 'us-central1-a'.
-  # Update the zone and instance name as needed. This step SSHs into the instance,
-  # pulls the new image, and restarts the docker-compose service.
+  # 3. Setup VM environment (Automated Install of Docker and Composer)
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'compute'
@@ -19,19 +16,61 @@ steps:
       - '--zone=us-central1-f'
       - '--command'
       - |
-        mkdir -p ~/name_matcher && cd ~/name_matcher && \
-        docker system prune -af && \
-        if [ ! -f docker-compose.yml ]; then echo "Place docker-compose.yml here!" && exit 1; fi && \
-        sed -i 's|image: gcr.io/.*|image: gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA|' docker-compose.yml || \
-        sed -i 's|build: .|image: gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA|' docker-compose.yml && \
-        docker-compose pull && \
-        docker-compose up -d && \
-        if ! grep -q "handle_path /name_matcher\*" /etc/caddy/Caddyfile; then \
-          echo -e "\n    # Name Matcher Engine Reverse Proxy\n    handle_path /name_matcher* {\n        reverse_proxy localhost:8000\n    }" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
-          sudo caddy reload --config /etc/caddy/Caddyfile; \
-        else \
-          echo "Caddyfile already configured for name_matcher."; \
+        mkdir -p ~/name_matcher_tmp ~/name_matcher
+        if ! command -v docker &> /dev/null; then
+          echo "Installing Docker..."
+          curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
         fi
+        if ! command -v docker-compose &> /dev/null; then
+          echo "Installing Docker Compose..."
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+        fi
+
+  # 4. Copy configuration, Caddyfile, and database files to the VM
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'scp'
+      - '--zone=us-central1-f'
+      - 'docker-compose.yml'
+      - 'Caddyfile'
+      - 'names_kb.db'
+      - 'name-matcher-vm:~/name_matcher_tmp/'
+
+  # 5. Execute Deployment (Swap images and restart Docker, Configure Caddy)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'ssh'
+      - 'name-matcher-vm'
+      - '--zone=us-central1-f'
+      - '--command'
+      - |
+        set -e
+        # Always overwrite configs with latest
+        mv ~/name_matcher_tmp/docker-compose.yml ~/name_matcher/
+        mv ~/name_matcher_tmp/Caddyfile ~/name_matcher/
+        
+        # Only copy over the DB if it doesn't exist to protect user overrides
+        if [ ! -f ~/name_matcher/names_kb.db ]; then
+          mv ~/name_matcher_tmp/names_kb.db ~/name_matcher/
+        fi
+        
+        cd ~/name_matcher
+        
+        # Prune old system artifacts
+        sudo docker system prune -af || true
+        
+        # Update docker-compose image with the newly built SHA
+        if grep -q "image: gcr.io/" docker-compose.yml; then
+          sed -i 's|image: gcr.io/.*|image: gcr.io/'"$PROJECT_ID"'/name_matcher_api:'"$COMMIT_SHA"'|' docker-compose.yml
+        else
+          sed -i 's|build: \.|image: gcr.io/'"$PROJECT_ID"'/name_matcher_api:'"$COMMIT_SHA"'|' docker-compose.yml
+        fi
+        
+        sudo docker-compose pull
+        sudo docker-compose up -d
 
 images:
   - 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA'
