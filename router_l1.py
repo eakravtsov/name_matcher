@@ -41,8 +41,14 @@ def check_level_1(name1, name2, use_carlton=True, use_wikidata=True, use_jrc=Tru
     if not os.path.exists(DB_PATH):
         return {"match": False, "confidence": 0.0, "explanation": "Database not found"}
 
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    try:
+        # Use URI for read-only access to avoid locking or permission issues in Docker
+        db_uri = f"file:{DB_PATH}?mode=ro"
+        conn = sqlite3.connect(db_uri, uri=True)
+        cursor = conn.cursor()
+    except sqlite3.OperationalError as e:
+        print(f"ERROR connecting to DB (L1): {e}")
+        return {"match": False, "confidence": 0.0, "explanation": f"Database access error: {e}"}
     
     cursor.execute("SELECT id, gender FROM CanonicalNames WHERE name_string = ?", (n1,))
     res1 = cursor.fetchone()

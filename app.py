@@ -11,6 +11,39 @@ app = FastAPI(title="Deep Name Matcher")
 base_matcher = NameMatcherWrapper()
 matcher = CompoundNameMatcher(base_matcher)
 
+def diagnose_db():
+    db_path = "names_kb.db"
+    print(f"--- DATABASE DIAGNOSTICS ---")
+    if not os.path.exists(db_path):
+        print(f"CRITICAL: {db_path} does not exist!")
+        return
+    
+    stats = os.stat(db_path)
+    import stat
+    mode = stats.st_mode
+    is_dir = stat.S_ISDIR(mode)
+    print(f"Path: {os.path.abspath(db_path)}")
+    print(f"Is Directory: {is_dir}")
+    print(f"Size: {stats.st_size} bytes")
+    print(f"Permissions: {oct(mode)}")
+    
+    try:
+        import sqlite3
+        # Attempt a read-only probe
+        uri = f"file:{db_path}?mode=ro"
+        conn = sqlite3.connect(uri, uri=True)
+        c = conn.cursor()
+        c.execute("SELECT count(*) FROM CanonicalNames")
+        count = c.fetchone()[0]
+        print(f"Probed OK: CanonicalNames count = {count}")
+        conn.close()
+    except Exception as e:
+        print(f"Probe FAILED: {e}")
+    print(f"---------------------------")
+
+# Run diagnostics at initialization
+diagnose_db()
+
 class MatchRequest(BaseModel):
     name1: str
     name2: str
@@ -51,7 +84,10 @@ async def serve_ui(request: Request):
 import sqlite3
 
 def get_db_connection():
-    conn = sqlite3.connect("names_kb.db")
+    # Write operations might still fail if the filesystem is RO, 
+    # but using URI is more consistent with our probe.
+    db_path = "names_kb.db"
+    conn = sqlite3.connect(f"file:{db_path}", uri=True)
     conn.row_factory = sqlite3.Row
     return conn
 
