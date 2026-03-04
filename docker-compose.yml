@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  name_matcher_api:
+    build: .
+    container_name: name_matcher_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ROOT_PATH=/name_matcher
+    volumes:
+      # Map the SQLite DB persistence layer
+      - ./names_kb.db:/app/names_kb.db

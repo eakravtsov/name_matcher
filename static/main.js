@@ -24,7 +24,7 @@ document.getElementById('matcher-form').addEventListener('submit', async (e) => 
     btn.disabled = true;
 
     try {
-        const response = await fetch('/api/match', {
+        const response = await fetch('api/match', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -74,7 +74,7 @@ async function executeKB(action) {
 
     try {
         const body = action === 'add' ? { name1, name2, relationship_type } : { name1, name2 };
-        const response = await fetch(`/api/kb/${action}`, {
+        const response = await fetch(`api/kb/${action}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)

@@ -133,4 +133,5 @@ async def remove_kb_entry(req: DBRemoveRequest):
 
 if __name__ == "__main__":
     print("Launching Engine...")
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    root_path = os.environ.get("ROOT_PATH", "")
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True, root_path=root_path)

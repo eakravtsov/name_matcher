@@ -1,0 +1,28 @@
+steps:
+  # 1. Build the lightweight CPU-bound Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA', '.']
+
+  # 2. Push the Docker image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA']
+
+  # 3. Deploy to Google Compute Engine (via docker-compose)
+  # NOTE: This assumes you have an instance named 'name-matcher-vm' running in 'us-central1-a'.
+  # Update the zone and instance name as needed. This step SSHs into the instance,
+  # pulls the new image, and restarts the docker-compose service.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'ssh'
+      - 'name-matcher-vm'
+      - '--zone=us-central1-f'
+      - '--command'
+      - |
+        cd /app/name_matcher && \
+        sed -i 's|build: .|image: gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA|' docker-compose.yml && \
+        docker-compose pull && \
+        docker-compose up -d
+
+images:
+  - 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA'
