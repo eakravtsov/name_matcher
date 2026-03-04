@@ -35,11 +35,16 @@ def diagnose_db():
         c = conn.cursor()
         c.execute("SELECT count(*) FROM CanonicalNames")
         count = c.fetchone()[0]
-        print(f"Probed OK: CanonicalNames count = {count}")
+        print(f"DB Probe OK: CanonicalNames count = {count}")
         conn.close()
+
+        # Model Inference Probe (Check for sklearn version match errors)
+        print("Model Probe: Testing Level 2 inference...")
+        test_res = matcher.evaluate("John", "Johnny", use_l2=True)
+        print(f"Model Probe OK: Match Prob = {test_res['confidence']:.4f}")
+
     except Exception as e:
         print(f"Probe FAILED: {e}")
-    print(f"---------------------------")
 
 # Run diagnostics at initialization
 diagnose_db()

@@ -39,6 +39,9 @@ class NameMatcherWrapper:
             self.model.load_state_dict(torch.load(model_path, map_location=self.device, weights_only=True))
             self.model.eval()
             self.calibrator = joblib.load(calibrator_path)
+            # Compatibility Patch: Scikit-learn version mismatches can drop internal attributes
+            if not hasattr(self.calibrator, 'multi_class'):
+                self.calibrator.multi_class = 'deprecated'
             self.ready = True
         except FileNotFoundError:
             print("WARNING: Could not find Level 2/3 assets. Only Level 1 will be active.")
