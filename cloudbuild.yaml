@@ -19,10 +19,19 @@ steps:
       - '--zone=us-central1-f'
       - '--command'
       - |
-        cd /app/name_matcher && \
+        mkdir -p ~/name_matcher && cd ~/name_matcher && \
+        docker system prune -af && \
+        if [ ! -f docker-compose.yml ]; then echo "Place docker-compose.yml here!" && exit 1; fi && \
+        sed -i 's|image: gcr.io/.*|image: gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA|' docker-compose.yml || \
         sed -i 's|build: .|image: gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA|' docker-compose.yml && \
         docker-compose pull && \
-        docker-compose up -d
+        docker-compose up -d && \
+        if ! grep -q "handle_path /name_matcher\*" /etc/caddy/Caddyfile; then \
+          echo -e "\n    # Name Matcher Engine Reverse Proxy\n    handle_path /name_matcher* {\n        reverse_proxy localhost:8000\n    }" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+          sudo caddy reload --config /etc/caddy/Caddyfile; \
+        else \
+          echo "Caddyfile already configured for name_matcher."; \
+        fi
 
 images:
   - 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA'
