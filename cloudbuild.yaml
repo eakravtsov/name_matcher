@@ -68,6 +68,9 @@ steps:
         
         sudo docker-compose pull
         sudo docker-compose up -d
+        
+        # Explicitly reload Caddy to catch any bind-mounted Caddyfile changes
+        sudo docker exec caddy caddy reload --config /etc/caddy/Caddyfile || sudo docker-compose restart caddy
 
 images:
   - 'gcr.io/$PROJECT_ID/name_matcher_api:$COMMIT_SHA'

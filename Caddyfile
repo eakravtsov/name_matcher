@@ -2,7 +2,8 @@ evgenyk.dev {
     # -----------------------------------------
     # Name Matcher Engine Reverse Proxy
     # -----------------------------------------
-    handle_path /name_matcher* {
+    redir /name_matcher /name_matcher/
+    handle_path /name_matcher/* {
         reverse_proxy name_matcher_api:8000
     }
 }
