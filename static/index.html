@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Name Matcher</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center relative font-sans">
+
+    <!-- Background Animated Blurs -->
+    <div
+        class="absolute top-10 left-10 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob pointer-events-none">
+    </div>
+    <div
+        class="absolute top-10 right-10 w-96 h-96 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 pointer-events-none">
+    </div>
+    <div
+        class="absolute -bottom-8 left-20 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none">
+    </div>
+
+    <div class="glass-card w-full max-w-6xl p-8 rounded-3xl shadow-2xl relative z-10 border border-slate-700/50">
+        <div class="flex items-center space-x-4 mb-8 border-b border-slate-700/50 pb-6">
+            <div class="p-2 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg shadow-lg">
+                <i data-lucide="network" class="text-white w-6 h-6"></i>
+            </div>
+            <div>
+                <h1
+                    class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 tracking-tight">
+                    Entity Resolution Engine</h1>
+                <p class="text-slate-500 text-xs font-medium uppercase tracking-widest">Siamese Neural Network Pipeline
+                    v3.1</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <!-- Left Side: Configuration & Input -->
+            <form id="matcher-form" class="space-y-6 border-r border-slate-700/30 pr-0 lg:pr-10">
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Name 1 -->
+                    <div class="space-y-2">
+                        <label
+                            class="block text-sm font-semibold text-slate-300 uppercase tracking-wider text-xs">Target
+                            Entity A</label>
+                        <div class="relative group">
+                            <i data-lucide="user"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors"></i>
+                            <input type="text" id="name1" required placeholder="e.g. Alexander"
+                                class="w-full bg-slate-800/50 border border-slate-600 text-slate-100 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all placeholder-slate-600 shadow-inner text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Name 2 -->
+                    <div class="space-y-2">
+                        <label
+                            class="block text-sm font-semibold text-slate-300 uppercase tracking-wider text-xs">Target
+                            Entity B</label>
+                        <div class="relative group">
+                            <i data-lucide="user-plus"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
+                            <input type="text" id="name2" required placeholder="e.g. Alexandrra"
+                                class="w-full bg-slate-800/50 border border-slate-600 text-slate-100 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all placeholder-slate-600 shadow-inner text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compound Engine Strategy Selection -->
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-300">Compound Name Matching</label>
+                        <div class="flex space-x-4 bg-slate-800/30 p-1 rounded-xl border border-slate-700/50">
+                            <label
+                                title="Requires both names to have the exact same number of tokens. Finds the best 1-to-1 match."
+                                class="flex-1 text-center cursor-pointer relative">
+                                <input type="radio" name="compound_strategy" value="symmetrical" checked
+                                    class="peer sr-only">
+                                <div
+                                    class="py-2.5 rounded-lg text-xs font-bold text-slate-500 peer-checked:bg-slate-700 peer-checked:text-white transition-all peer-checked:shadow-sm uppercase tracking-wide">
+                                    Symmetrical</div>
+                            </label>
+                            <label
+                                title="Allows names with different token lengths. Matches as many as possible and penalizes missing parts."
+                                class="flex-1 text-center cursor-pointer relative">
+                                <input type="radio" name="compound_strategy" value="asymmetrical" class="peer sr-only">
+                                <div
+                                    class="py-2.5 rounded-lg text-xs font-bold text-slate-500 peer-checked:bg-slate-700 peer-checked:text-white transition-all peer-checked:shadow-sm uppercase tracking-wide">
+                                    Asymmetrical</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-300">Ordering & Heuristics</label>
+                        <div class="grid grid-cols-1 gap-2">
+                            <!-- Strict Order Toggle -->
+                            <label
+                                class="flex items-center justify-between bg-slate-800/30 p-2 rounded-xl border border-slate-700/50 cursor-pointer group hover:bg-slate-800/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="p-1.5 bg-slate-700 rounded-lg group-hover:bg-slate-600 transition-colors">
+                                        <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-400"></i>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-sm font-medium text-slate-300">Enforce Strict Order</span>
+                                        <div class="group/tip relative flex items-center">
+                                            <i data-lucide="help-circle"
+                                                class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                            <div
+                                                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                                <p
+                                                    class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                                    Matches must occur in the exact sequence provided (e.g. <span
+                                                        class="text-cyan-400 font-semibold text-[9px]">John Smith !=
+                                                        Smith John</span>).</p>
+                                                <div
+                                                    class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="chk-strict-order" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600">
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Allow Initials Toggle -->
+                            <label
+                                class="flex items-center justify-between bg-slate-800/30 p-2 rounded-xl border border-slate-700/50 cursor-pointer group hover:bg-slate-800/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="p-1.5 bg-slate-700 rounded-lg group-hover:bg-slate-600 transition-colors">
+                                        <i data-lucide="type" class="w-4 h-4 text-cyan-400"></i>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-sm font-medium text-slate-300">Allow Initials</span>
+                                        <div class="group/tip relative flex items-center">
+                                            <i data-lucide="help-circle"
+                                                class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                            <div
+                                                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                                <p
+                                                    class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                                    Allows single character tokens to match their full counterparts
+                                                    (e.g. <span class="text-cyan-400 font-semibold text-[9px]">J. =
+                                                        John</span>).</p>
+                                                <div
+                                                    class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="chk-allow-initials" checked class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600">
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Strict Unknowns Toggle -->
+                            <label
+                                class="flex items-center justify-between bg-slate-800/30 p-2 rounded-xl border border-slate-700/50 cursor-pointer group hover:bg-slate-800/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="p-1.5 bg-slate-700 rounded-lg group-hover:bg-slate-600 transition-colors">
+                                        <i data-lucide="shield-alert" class="w-4 h-4 text-cyan-400"></i>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-sm font-medium text-slate-300">Strict Unknown Names</span>
+                                        <div class="group/tip relative flex items-center">
+                                            <i data-lucide="help-circle"
+                                                class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                            <div
+                                                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                                <p
+                                                    class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                                    If an entity isn't in any Knowledge Base, require an exact spelling
+                                                    match (bypasses fuzzy neural net).</p>
+                                                <div
+                                                    class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="chk-strict-unknowns" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600">
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Stepwise Substring Matching Toggle -->
+                            <label
+                                class="flex items-center justify-between bg-slate-800/30 p-2 rounded-xl border border-slate-700/50 cursor-pointer group hover:bg-slate-800/50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="p-1.5 bg-slate-700 rounded-lg group-hover:bg-slate-600 transition-colors">
+                                        <i data-lucide="split-square-horizontal" class="w-4 h-4 text-cyan-400"></i>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-sm font-medium text-slate-300">Stepwise Substrings</span>
+                                        <div class="group/tip relative flex items-center">
+                                            <i data-lucide="help-circle"
+                                                class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                            <div
+                                                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                                <p
+                                                    class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                                    Dynamically break compound tokens apart if lengths differ (e.g.
+                                                    split <span class="text-cyan-400 font-semibold text-[9px]">Maryjane
+                                                        -> Mary</span> and <span
+                                                        class="text-cyan-400 font-semibold text-[9px]">jane</span>).</p>
+                                                <div
+                                                    class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="chk-allow-stepwise" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600">
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engine Configuration -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-slate-300">Knowledge Base Sources</label>
+                    <div class="grid grid-cols-2 gap-2 bg-slate-800/20 p-3 rounded-xl border border-slate-700/50">
+                        <label
+                            class="cursor-pointer relative flex items-center p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+                            <input type="checkbox" id="chk-carlton" checked class="peer sr-only">
+                            <div
+                                class="w-4 h-4 rounded border border-slate-500 peer-checked:bg-cyan-500 peer-checked:border-cyan-500 flex items-center justify-center mr-2 transition-colors">
+                                <i data-lucide="check"
+                                    class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                            </div>
+                            <div class="flex items-center space-x-1 w-full justify-between pr-1">
+                                <span
+                                    class="text-xs font-medium text-slate-400 peer-checked:text-white transition-colors truncate">Carlton
+                                    DB</span>
+                                <div class="group/tip relative flex items-center shrink-0">
+                                    <i data-lucide="help-circle"
+                                        class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                    <div
+                                        class="absolute bottom-full right-0 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                        <p
+                                            class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                            Historical database of standard names and known diminutives.</p>
+                                        <div
+                                            class="absolute top-full right-2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        <label
+                            class="cursor-pointer relative flex items-center p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+                            <input type="checkbox" id="chk-wikidata" checked class="peer sr-only">
+                            <div
+                                class="w-4 h-4 rounded border border-slate-500 peer-checked:bg-cyan-500 peer-checked:border-cyan-500 flex items-center justify-center mr-2 transition-colors">
+                                <i data-lucide="check"
+                                    class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                            </div>
+                            <div class="flex items-center space-x-1 w-full justify-between pr-1">
+                                <span
+                                    class="text-xs font-medium text-slate-400 peer-checked:text-white transition-colors truncate">Wikidata</span>
+                                <div class="group/tip relative flex items-center shrink-0">
+                                    <i data-lucide="help-circle"
+                                        class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                    <div
+                                        class="absolute bottom-full right-0 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                        <p
+                                            class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                            Extracted entity relationships and aliases from Wikipedia/Wikidata
+                                            structures.</p>
+                                        <div
+                                            class="absolute top-full right-2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        <label
+                            class="cursor-pointer relative flex items-center p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+                            <input type="checkbox" id="chk-jrc" checked class="peer sr-only">
+                            <div
+                                class="w-4 h-4 rounded border border-slate-500 peer-checked:bg-cyan-500 peer-checked:border-cyan-500 flex items-center justify-center mr-2 transition-colors">
+                                <i data-lucide="check"
+                                    class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                            </div>
+                            <div class="flex items-center space-x-1 w-full justify-between pr-1">
+                                <span
+                                    class="text-xs font-medium text-slate-400 peer-checked:text-white transition-colors truncate">JRC-Names</span>
+                                <div class="group/tip relative flex items-center shrink-0">
+                                    <i data-lucide="help-circle"
+                                        class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                    <div
+                                        class="absolute bottom-full right-0 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                        <p
+                                            class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                            Joint Research Centre collection of international name variations and
+                                            translations.</p>
+                                        <div
+                                            class="absolute top-full right-2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        <label
+                            class="cursor-pointer relative flex items-center p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+                            <input type="checkbox" id="chk-l2" checked class="peer sr-only">
+                            <div
+                                class="w-4 h-4 rounded border border-purple-500/70 peer-checked:bg-purple-600 peer-checked:border-purple-600 flex items-center justify-center mr-2 transition-colors">
+                                <i data-lucide="zap"
+                                    class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                            </div>
+                            <div class="flex items-center space-x-1 w-full justify-between pr-1">
+                                <span
+                                    class="text-xs font-bold text-purple-400 peer-checked:text-purple-200 transition-colors truncate">L2
+                                    Model</span>
+                                <div class="group/tip relative flex items-center shrink-0">
+                                    <i data-lucide="help-circle"
+                                        class="w-3.5 h-3.5 text-slate-500 hover:text-cyan-400 transition-colors"></i>
+                                    <div
+                                        class="absolute bottom-full right-0 mb-2 hidden group-hover/tip:block w-48 p-2.5 bg-slate-900 border border-slate-700/80 rounded-lg shadow-2xl z-50">
+                                        <p
+                                            class="text-[10px] text-slate-300 leading-relaxed text-center font-normal tracking-wide">
+                                            Deep Learning Siamese Network that calculates direct semantic character
+                                            sequence distances.</p>
+                                        <div
+                                            class="absolute top-full right-2 -mt-[1px] border-4 border-transparent border-t-slate-700/80">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transform transition active:scale-[0.98] flex items-center justify-center space-x-2">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                    <span>Engage Neural Matcher</span>
+                </button>
+
+            </form>
+
+            <!-- Right Side: Analysis & Results -->
+            <div class="relative min-h-[400px]">
+                <!-- Processing Overlay -->
+                <div id="processing-state"
+                    class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-3xl transition-opacity duration-300">
+                    <div class="relative">
+                        <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin">
+                        </div>
+                        <i data-lucide="brain-circuit"
+                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-cyan-400 animate-pulse"></i>
+                    </div>
+                    <span class="mt-4 text-cyan-400 font-bold tracking-widest uppercase text-xs animate-pulse">Analyzing
+                        Neural Tokens...</span>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state"
+                    class="absolute inset-0 flex flex-col items-center justify-center text-slate-600 text-center px-10">
+                    <i data-lucide="layers" class="w-12 h-12 mb-4 opacity-20"></i>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500">Analysis Surface Ready</h3>
+                    <p class="text-xs mt-2 max-w-[200px]">Input entity pairs and engage the neural engine to populate
+                        this panel with deep-learning insights and token alignment traces.</p>
+                </div>
+
+                <!-- Actual Results Section -->
+                <div id="result-container" class="hidden opacity-0 transition-all duration-500 h-full">
+                    <div class="h-full flex flex-col space-y-6">
+                        <div
+                            class="p-6 rounded-2xl bg-slate-800/30 border border-slate-700/50 shadow-inner relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-1.5 h-full" id="result-accent"></div>
+
+                            <div class="flex items-start justify-between">
+                                <div class="space-y-1">
+                                    <div class="flex items-center space-x-2">
+                                        <i id="result-icon" class="w-6 h-6"></i>
+                                        <h3 id="result-title" class="text-xl font-bold tracking-tight"></h3>
+                                    </div>
+                                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest"
+                                        id="engine-mode-tag">Siamese Hybrid Pipeline</div>
+                                </div>
+
+                                <div class="text-right">
+                                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
+                                        Confidence Score</div>
+                                    <div class="text-4xl font-black font-mono tracking-tighter" id="result-confidence">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="mt-6 h-2 w-full bg-slate-700/50 rounded-full overflow-hidden">
+                                <div id="confidence-bar"
+                                    class="h-full rounded-full w-0 transition-all duration-1000 ease-out"></div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Explanation Surface -->
+                        <div class="flex-1 p-6 rounded-2xl bg-slate-800/10 border border-slate-700/30 flex flex-col">
+                            <div class="flex items-center space-x-2 mb-4">
+                                <i data-lucide="binary" class="w-4 h-4 text-slate-500"></i>
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Logic & Trace
+                                    Explanation</h4>
+                            </div>
+                            <div id="result-explanation" class="text-slate-300 text-sm leading-relaxed overflow-hidden">
+                            </div>
+                        </div>
+
+                        <!-- Knowledge Base Customization (Relocated) -->
+                        <div class="pt-4 border-t border-slate-700/50">
+                            <button type="button" id="btn-toggle-kb"
+                                class="w-full text-slate-500 hover:text-white text-xs font-semibold flex items-center justify-center space-x-2 transition uppercase tracking-tighter">
+                                <i data-lucide="database" class="w-3.5 h-3.5"></i>
+                                <span>Refine Knowledge Base Relationships</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5" id="kb-chevron"></i>
+                            </button>
+
+                            <div id="kb-panel"
+                                class="hidden mt-3 p-4 bg-slate-900/50 rounded-xl border border-slate-700/50">
+                                <div class="flex flex-col space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span
+                                            class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Override
+                                            for active pair</span>
+                                        <div id="kb-feedback" class="text-[10px] font-medium min-h-[12px]"></div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <select id="kb-rel-type"
+                                            class="flex-1 bg-slate-800 border border-slate-600 rounded-lg text-xs text-white px-3 py-2 outline-none focus:border-cyan-500 transition">
+                                            <option value="alias">Alias / Translation (Match)</option>
+                                            <option value="diminutive">Diminutive / Nickname (Match)</option>
+                                            <option value="mismatch">False Positive (Reject)</option>
+                                        </select>
+                                        <button type="button" id="btn-kb-add"
+                                            class="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-400 text-xs font-bold py-2 px-4 rounded-lg transition border border-cyan-600/30">Inject
+                                            Rule</button>
+                                        <button type="button" id="btn-kb-remove"
+                                            class="bg-red-900/30 hover:bg-red-800/50 text-red-200 text-xs font-bold py-2 px-4 rounded-lg transition border border-red-800/30">Wipe
+                                            Links</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/main.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

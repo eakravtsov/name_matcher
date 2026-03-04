@@ -1,0 +1,97 @@
+# =========================
+# Python & Machine Learning
+# =========================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# PyTorch / Machine Learning Models
+*.pt
+*.pth
+*.pkl
+
+# Datasets & Databases
+*.csv
+*.db
+*.sqlite3
+names_kb.db
+jrc_names_parsed.csv
+train.csv
+val.csv
+suspect_pairs_*.csv
+
+# Distribution / Packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# =========================
+# JavaScript / Node.js
+# =========================
+# Dependencies
+node_modules/
+jspm_packages/
+
+# Build / Output directories
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Caches
+.npm
+.eslintcache
+.stylelintcache
+
+# =========================
+# HTML & CSS
+# =========================
+# (Typically tracked, but ignoring preprocessor caches)
+.sass-cache/
+*.css.map
+
+# =========================
+# OS & Editor Specific
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
