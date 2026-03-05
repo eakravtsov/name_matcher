@@ -21,15 +21,9 @@ body {
         max-height: 95vh;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow-y: auto;
         margin: 0;
     }
-}
-
-#matcher-form,
-#result-explanation,
-#kb-panel {
-    overflow: hidden;
 }
 
 @keyframes blob {
