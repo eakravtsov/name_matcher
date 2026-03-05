@@ -17,18 +17,42 @@ body {
 }
 
 @media (min-width: 1024px) {
-    body {
-        overflow: hidden;
-        /* Let JS handles scaling, prevent scrollbars */
-    }
-
     .glass-card {
+        max-height: 92vh;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        /* Completely self-contained */
+        overflow-y: auto;
         margin: 0;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(6, 182, 212, 0.3) rgba(15, 23, 42, 0.1);
     }
+
+    /* Premium Custom Scrollbars for Webkit */
+    .glass-card::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .glass-card::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.1);
+        border-radius: 10px;
+    }
+
+    .glass-card::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, rgba(6, 182, 212, 0.4), rgba(147, 51, 234, 0.4));
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-card::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, rgba(6, 182, 212, 0.6), rgba(147, 51, 234, 0.6));
+    }
+}
+
+/* Ensure inner panels don't trap layout */
+#matcher-form,
+#result-explanation,
+#kb-panel {
+    flex-shrink: 0;
 }
 
 @keyframes blob {
