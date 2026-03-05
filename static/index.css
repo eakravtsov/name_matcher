@@ -17,11 +17,16 @@ body {
 }
 
 @media (min-width: 1024px) {
+    body {
+        overflow: hidden;
+        /* Let JS handles scaling, prevent scrollbars */
+    }
+
     .glass-card {
-        max-height: 95vh;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
+        overflow: hidden;
+        /* Completely self-contained */
         margin: 0;
     }
 }

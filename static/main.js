@@ -61,7 +61,10 @@ btnToggleKb.addEventListener('click', () => {
     } else {
         kbChevron.style.transform = 'rotate(180deg)';
     }
+    // Content bounds changed, recalculate scale
+    setTimeout(fitCardToScreen, 10);
 });
+
 
 async function executeKB(action) {
     const name1 = document.getElementById('name1').value.trim();
@@ -186,3 +189,32 @@ function displayResult(data) {
 
     lucide.createIcons();
 }
+
+// UI Shrink-to-Fit Logic for Desktop Viewports
+function fitCardToScreen() {
+    const card = document.querySelector('.glass-card');
+    if (!card) return;
+
+    if (window.innerWidth >= 1024) {
+        // Reset scale to measure intrinsic height
+        card.style.transform = 'none';
+
+        const rect = card.getBoundingClientRect();
+        const availableHeight = window.innerHeight * 0.95; // 95vh padded window
+
+        if (rect.height > availableHeight) {
+            const scale = availableHeight / rect.height;
+            card.style.transform = `scale(${scale})`;
+            card.style.transformOrigin = 'center center';
+        }
+    } else {
+        // Remove scaling on mobile, natural native scrolling will happen
+        card.style.transform = 'none';
+    }
+}
+
+// Bind scale logic to resize and load events
+window.addEventListener('resize', fitCardToScreen);
+document.addEventListener('DOMContentLoaded', fitCardToScreen);
+// Run immediately in case DOMContentLoaded already fired
+fitCardToScreen();
